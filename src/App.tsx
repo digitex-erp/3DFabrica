@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRoutes, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/home";
 import Studio from "./pages/Studio";
@@ -7,8 +7,24 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import routes from "tempo-routes";
 
 function App() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Brief delay to ensure styles and initial assets are ready for screenshots
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">3D Fabrica...</div>
+      </div>
+    );
+  }
+
   return (
-    <Suspense fallback={<p className="flex items-center justify-center min-h-screen">Loading...</p>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-white">Loading...</div>}>
       <>
         <Routes>
           <Route path="/" element={<Home />} />
