@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useCallback, useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, FileText, CheckCircle } from "lucide-react";
 import { Progress } from "../ui/progress";
@@ -36,20 +36,30 @@ const UploadZone = ({
   error = "",
 }: UploadZoneProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [user, setUser] = useState<any>(null);
 
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      if (!isAuthenticated) {
-        loginWithRedirect();
+      if (!user) {
+        supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
         return;
       }
       setSelectedFile(file);
       onFileAccepted(file);
     },
-    [onFileAccepted],
+    [onFileAccepted, user],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -11,7 +11,10 @@ import { calculateEcoImpact } from "@/lib/fabric-service";
 import { initializePayment } from "@/lib/payment-service";
 import { convertToModel } from "@/lib/3d-service";
 
+import { useNavigate } from "react-router-dom";
+
 const Home = () => {
+  const navigate = useNavigate();
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const handleSelectImage = (id: string) => {
@@ -92,11 +95,7 @@ const Home = () => {
               <Button
                 size="lg"
                 className="bg-white text-[#1B365D] hover:bg-gray-100"
-                onClick={() =>
-                  document
-                    .getElementById("upload-section")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={() => navigate("/studio")}
               >
                 Start Free Trial
               </Button>
