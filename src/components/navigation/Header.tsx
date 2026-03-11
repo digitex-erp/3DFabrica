@@ -43,8 +43,11 @@ const Header = () => {
 
         {/* Desktop navigation */}
         <nav className="hidden lg:flex items-center gap-6 ml-8">
-          <a href="#" className="hover:text-gray-300 transition-colors">
+          <a href="/" className="hover:text-gray-300 transition-colors">
             Home
+          </a>
+          <a href="/studio" className="hover:text-gray-300 transition-colors font-semibold">
+            Studio
           </a>
           <a href="#" className="hover:text-gray-300 transition-colors">
             Pricing
