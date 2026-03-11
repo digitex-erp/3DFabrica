@@ -105,9 +105,6 @@ export function applyTextureToModel(
       const material = new THREE.MeshStandardMaterial({
         map: texture,
         roughness: preset.roughness,
-        sheen: preset.sheen,
-        sheenRoughness: preset.sheenRoughness,
-        sheenColor: preset.sheenColor,
         metalness: 0,
         side: THREE.FrontSide,
       });

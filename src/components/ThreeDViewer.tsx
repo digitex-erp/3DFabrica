@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, useGLTF, Html } from "@react-three/drei";
+import React, { useEffect, useState, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Environment, ContactShadows, Html } from "@react-three/drei";
 import * as THREE from "three";
-import { loadSeamlessTexture, createFabricMaterial, FABRIC_PRESETS, type FabricType, disposeTexture } from "../lib/texture-service";
+import { loadSeamlessTexture, FABRIC_PRESETS, type FabricType, disposeTexture } from "../lib/texture-service";
 import { disposeAllResources } from "../lib/3d-service";
 
-/**
- * ThreeDViewerProps
- */
 interface ThreeDViewerProps {
   fabricImageUrl?: string;
   fabricType?: FabricType;
@@ -16,9 +13,6 @@ interface ThreeDViewerProps {
   showControls?: boolean;
 }
 
-/**
- * Loading indicator component
- */
 function Loader() {
   return (
     <Html center>
@@ -30,11 +24,6 @@ function Loader() {
   );
 }
 
-/**
- * Sofa model component
- * Uses a simple box geometry as placeholder
- * Replace with actual GLTF model for production
- */
 function SofaModel({ 
   texture, 
   fabricType = "cotton" 
@@ -43,31 +32,24 @@ function SofaModel({
   fabricType?: FabricType;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const preset = FABRIC_PRESETS[fabricType];
+  const preset = FABRIC_PRESETS[fabricType] || FABRIC_PRESETS.cotton;
 
-  // Animate subtle movement
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
     }
   });
 
-  // Create material based on fabric type
   const material = React.useMemo(() => {
-    const mat = new THREE.MeshStandardMaterial({
+    return new THREE.MeshStandardMaterial({
       map: texture,
       color: new THREE.Color(0xffffff),
       roughness: preset.roughness,
-      sheen: preset.sheen,
-      sheenRoughness: preset.sheenRoughness,
-      sheenColor: preset.sheenColor,
       metalness: 0,
       side: THREE.DoubleSide,
     });
-    return mat;
   }, [texture, preset]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       material.dispose();
@@ -77,35 +59,24 @@ function SofaModel({
 
   return (
     <group>
-      {/* Seat */}
       <mesh ref={meshRef} position={[0, 0.4, 0]} castShadow receiveShadow material={material}>
         <boxGeometry args={[2.2, 0.4, 1]} />
       </mesh>
-      
-      {/* Backrest */}
       <mesh position={[0, 0.9, -0.35]} castShadow receiveShadow material={material}>
         <boxGeometry args={[2.2, 0.8, 0.3]} />
       </mesh>
-      
-      {/* Left armrest */}
       <mesh position={[-1, 0.65, 0]} castShadow receiveShadow material={material}>
         <boxGeometry args={[0.2, 0.5, 1]} />
       </mesh>
-      
-      {/* Right armrest */}
       <mesh position={[1, 0.65, 0]} castShadow receiveShadow material={material}>
         <boxGeometry args={[0.2, 0.5, 1]} />
       </mesh>
-      
-      {/* Cushions */}
       <mesh position={[-0.5, 0.7, 0.05]} castShadow receiveShadow material={material}>
         <boxGeometry args={[0.7, 0.15, 0.7]} />
       </mesh>
       <mesh position={[0.5, 0.7, 0.05]} castShadow receiveShadow material={material}>
         <boxGeometry args={[0.7, 0.15, 0.7]} />
       </mesh>
-      
-      {/* Legs */}
       {[[-0.9, 0.1, 0.35], [0.9, 0.1, 0.35], [-0.9, 0.1, -0.35], [0.9, 0.1, -0.35]].map((pos, i) => (
         <mesh key={i} position={pos as [number, number, number]} castShadow>
           <cylinderGeometry args={[0.05, 0.05, 0.2, 8]} />
@@ -116,9 +87,6 @@ function SofaModel({
   );
 }
 
-/**
- * Scene component with lighting and environment
- */
 function Scene({ 
   fabricImageUrl, 
   fabricType = "cotton",
@@ -128,10 +96,9 @@ function Scene({
   fabricType?: FabricType;
   autoRotate?: boolean;
 }) {
-  const [texture, setTexture] = useState<THREE.Texture | undefined>();
+  const [texture, setTexture] = useState<THREE.Texture>();
   const [loading, setLoading] = useState(false);
 
-  // Load texture when image URL changes
   useEffect(() => {
     if (!fabricImageUrl) {
       setTexture(undefined);
@@ -153,8 +120,7 @@ function Scene({
           setLoading(false);
         }
       })
-      .catch((err) => {
-        console.error("Failed to load texture:", err);
+      .catch(() => {
         if (isMounted) setLoading(false);
       });
 
@@ -163,7 +129,6 @@ function Scene({
     };
   }, [fabricImageUrl]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       disposeAllResources();
@@ -172,42 +137,20 @@ function Scene({
 
   return (
     <>
-      {/* Lighting */}
       <ambientLight intensity={0.4} />
-      <directionalLight
-        position={[5, 5, 5]}
-        intensity={1}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-      />
+      <directionalLight position={[5, 5, 5]} intensity={1} castShadow shadow-mapSize={[2048, 2048]} />
       <pointLight position={[-5, 5, -5]} intensity={0.5} />
-      
-      {/* Environment for reflections */}
       <Environment preset="apartment" />
-      
-      {/* Model */}
       {loading ? (
         <Loader />
       ) : (
         <SofaModel texture={texture} fabricType={fabricType} />
       )}
-      
-      {/* Ground shadow */}
-      <ContactShadows
-        position={[0, 0, 0]}
-        opacity={0.4}
-        scale={10}
-        blur={2}
-        far={4}
-      />
-      
-      {/* Floor */}
+      <ContactShadows position={[0, 0, 0]} opacity={0.4} scale={10} blur={2} far={4} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial color="#f5f5f5" roughness={0.9} />
       </mesh>
-      
-      {/* Controls */}
       <OrbitControls
         autoRotate={autoRotate}
         autoRotateSpeed={0.5}
@@ -222,10 +165,6 @@ function Scene({
   );
 }
 
-/**
- * Main ThreeDViewer component
- * React Three Fiber canvas with fabric visualization
- */
 export default function ThreeDViewer({
   fabricImageUrl,
   fabricType = "cotton",
@@ -236,44 +175,24 @@ export default function ThreeDViewer({
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div 
-      ref={containerRef}
-      className="w-full h-full min-h-[400px] bg-gray-100 rounded-lg overflow-hidden"
-    >
+    <div ref={containerRef} className="w-full h-full min-h-[400px] bg-gray-100 rounded-lg overflow-hidden">
       <Canvas
         shadows
         camera={{ position: [3, 2, 5], fov: 50 }}
-        gl={{ 
-          antialias: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
-        }}
+        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
       >
-        <Scene 
-          fabricImageUrl={fabricImageUrl}
-          fabricType={fabricType}
-          autoRotate={autoRotate}
-        />
+        <Scene fabricImageUrl={fabricImageUrl} fabricType={fabricType} autoRotate={autoRotate} />
       </Canvas>
-      
-      {/* Fabric info overlay */}
       {fabricImageUrl && (
         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
-          <p className="text-sm font-medium text-gray-700 capitalize">
-            {fabricType} Fabric
-          </p>
-          <p className="text-xs text-gray-500">
-            {autoRotate ? "Auto-rotating" : "Drag to rotate"}
-          </p>
+          <p className="text-sm font-medium text-gray-700 capitalize">{fabricType} Fabric</p>
+          <p className="text-xs text-gray-500">{autoRotate ? "Auto-rotating" : "Drag to rotate"}</p>
         </div>
       )}
     </div>
   );
 }
 
-/**
- * Preload a texture for faster initial render
- */
 export function preloadTexture(url: string) {
   const loader = new THREE.TextureLoader();
   loader.load(url);

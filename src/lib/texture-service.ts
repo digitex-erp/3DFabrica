@@ -129,10 +129,10 @@ export function createFabricMaterial(config: FabricPBRConfig = {}): THREE.MeshSt
     // aoMap: config.aoMap,
     // aoMapIntensity: config.aoIntensity ?? 1.0,
 
-    // Sheen for velvet-like materials (Three.js r155+)
-    sheen: config.sheen ?? 0.0,
-    sheenRoughness: config.sheenRoughness ?? 0.5,
-    sheenColor: config.sheenColor || new THREE.Color(0xffffff),
+  // Sheen for velvet-like materials - removed for compatibility
+  // sheen: config.sheen ?? 0.0,
+  // sheenRoughness: config.sheenRoughness ?? 0.5,
+  // sheenColor: config.sheenColor || new THREE.Color(0xffffff),
 
     // Ensure proper rendering
     side: THREE.FrontSide,
@@ -209,45 +209,24 @@ export function disposeMaterial(material: THREE.Material): void {
 export const FABRIC_PRESETS = {
   cotton: {
     roughness: 0.85,
-    sheen: 0.1,
-    sheenRoughness: 0.8,
-    sheenColor: new THREE.Color(0xffffff),
   },
   silk: {
     roughness: 0.3,
-    sheen: 0.8,
-    sheenRoughness: 0.2,
-    sheenColor: new THREE.Color(0xffeeee),
   },
   velvet: {
     roughness: 0.9,
-    sheen: 1.0,
-    sheenRoughness: 0.3,
-    sheenColor: new THREE.Color(0xeeeeff),
   },
   leather: {
     roughness: 0.5,
-    sheen: 0.3,
-    sheenRoughness: 0.4,
-    sheenColor: new THREE.Color(0xdddddd),
   },
   wool: {
     roughness: 0.95,
-    sheen: 0.05,
-    sheenRoughness: 0.9,
-    sheenColor: new THREE.Color(0xffffff),
   },
   linen: {
     roughness: 0.75,
-    sheen: 0.15,
-    sheenRoughness: 0.7,
-    sheenColor: new THREE.Color(0xfff8f0),
   },
   polyester: {
     roughness: 0.4,
-    sheen: 0.5,
-    sheenRoughness: 0.3,
-    sheenColor: new THREE.Color(0xffffff),
   },
 } as const;
 
