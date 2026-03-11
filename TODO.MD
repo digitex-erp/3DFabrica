@@ -1,0 +1,4 @@
+- [x] Fix runtime error (window.replit)
+- [x] Create Supabase fabrics table + RLS
+- [x] Activate fabric upload → 3D mapping → PDF export workflow
+- [x] White background + auto-sidebar + upholstery-only content

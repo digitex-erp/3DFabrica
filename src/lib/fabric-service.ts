@@ -1,4 +1,4 @@
-import { sha256 } from "crypto-js";
+import { SHA256 } from "crypto-js";
 
 interface FabricMetadata {
   id: string;
@@ -15,7 +15,7 @@ export const generateFabricHash = async (file: File): Promise<string> => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const buffer = e.target?.result;
-      const hash = sha256(buffer as string).toString();
+      const hash = SHA256(buffer as string).toString();
       resolve(hash);
     };
     reader.readAsArrayBuffer(file);

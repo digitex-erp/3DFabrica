@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Image, CheckCircle2 } from "lucide-react";
+import { initializePayment } from "@/lib/payment-service";
+import { convertToModel } from "@/lib/3d-service";
 
 interface UploadedImage {
   id: string;

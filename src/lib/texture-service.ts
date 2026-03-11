@@ -101,9 +101,6 @@ export interface FabricPBRConfig {
   metalness?: number;
   normalScale?: number;
   aoIntensity?: number;
-  sheen?: number;
-  sheenRoughness?: number;
-  sheenColor?: THREE.Color;
 }
 
 /**
@@ -197,7 +194,6 @@ export function disposeMaterial(material: THREE.Material): void {
     disposeTexture(material.displacementMap);
     disposeTexture(material.emissiveMap);
     disposeTexture(material.alphaMap);
-    disposeTexture(material.gradientMap);
     disposeTexture(material.envMap);
   }
   material.dispose();

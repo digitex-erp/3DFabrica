@@ -70,12 +70,9 @@ export async function uploadFabricImage(
     const { error: dbError } = await supabase.from("fabrics").insert({
       id: fabricId,
       name: metadata.name || file.name,
-      description: metadata.description,
-      category: metadata.category || "upholstery",
-      material: metadata.material,
-      pattern: metadata.pattern,
-      color: metadata.color,
-      image_url: imageUrl,
+      type: metadata.category || "upholstery",
+      url: imageUrl,
+      tiled_url: imageUrl, // For now, use the same URL; in production, this would be a processed URL
       created_at: new Date().toISOString(),
       user_id: (await supabase.auth.getUser()).data.user?.id,
     });

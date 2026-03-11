@@ -7,6 +7,9 @@ import UploadZone from "./upload/UploadZone";
 import UploadedImages from "./upload/UploadedImages";
 import CartFooter from "./cart/CartFooter";
 import FabricPreview from "./preview/FabricPreview";
+import { calculateEcoImpact } from "@/lib/fabric-service";
+import { initializePayment } from "@/lib/payment-service";
+import { convertToModel } from "@/lib/3d-service";
 
 const Home = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -72,7 +75,7 @@ const Home = () => {
     setUploadedImages((prev) => [...prev, newImage]);
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
 
       {/* Hero Section */}
@@ -129,7 +132,7 @@ const Home = () => {
       </section>
 
       {/* Preview Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">

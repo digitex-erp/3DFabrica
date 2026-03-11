@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, Html } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, Html, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { loadSeamlessTexture, FABRIC_PRESETS, type FabricType, disposeTexture } from "../lib/texture-service";
 import { uploadFabricImage } from "../lib/fabric-upload";
@@ -16,6 +16,7 @@ const SAMPLE_FABRICS = [
 ];
 
 function SofaModel({ texture, fabricType }: { texture?: THREE.Texture; fabricType?: FabricType }) {
+  const { scene } = useGLTF("https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/sofa/model.gltf");
   const preset = (fabricType ? FABRIC_PRESETS[fabricType] : FABRIC_PRESETS.cotton) || FABRIC_PRESETS.cotton;
   
   const material = React.useMemo(() => {
@@ -28,34 +29,17 @@ function SofaModel({ texture, fabricType }: { texture?: THREE.Texture; fabricTyp
     });
   }, [texture, preset]);
 
-  return (
-    <group>
-      <mesh position={[0, 0.4, 0]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[2.2, 0.4, 1]} />
-      </mesh>
-      <mesh position={[0, 0.9, -0.35]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[2.2, 0.8, 0.3]} />
-      </mesh>
-      <mesh position={[-1, 0.65, 0]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[0.2, 0.5, 1]} />
-      </mesh>
-      <mesh position={[1, 0.65, 0]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[0.2, 0.5, 1]} />
-      </mesh>
-      <mesh position={[-0.5, 0.7, 0.05]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[0.7, 0.15, 0.7]} />
-      </mesh>
-      <mesh position={[0.5, 0.7, 0.05]} castShadow receiveShadow material={material}>
-        <boxGeometry args={[0.7, 0.15, 0.7]} />
-      </mesh>
-      {[[-0.9, 0.1, 0.35], [0.9, 0.1, 0.35], [-0.9, 0.1, -0.35], [0.9, 0.1, -0.35]].map((pos, i) => (
-        <mesh key={i} position={pos as [number, number, number]} castShadow>
-          <cylinderGeometry args={[0.05, 0.05, 0.2, 8]} />
-          <meshStandardMaterial color="#4a3728" roughness={0.8} />
-        </mesh>
-      ))}
-    </group>
-  );
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as any).isMesh) {
+        (child as THREE.Mesh).material = material;
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  }, [scene, material]);
+
+  return <primitive object={scene} scale={2} position={[0, 0, 0]} />;
 }
 
 function Scene({ fabricUrl, fabricType }: { fabricUrl?: string; fabricType?: FabricType }) {
@@ -124,19 +108,11 @@ function Sidebar({ fabrics, selectedFabric, onSelectFabric, onUpload, isExpanded
   return (
     <aside
       id="sidebar"
-      className={`fixed left-0 top-0 h-full bg-white shadow-xl z-50 transition-all duration-300 ${isExpanded ? "w-72" : "w-16"}`}
+      className={`fixed left-0 top-0 h-full bg-white shadow-xl z-50 transition-all duration-300 ${isExpanded ? "w-72" : "w-[30px]"}`}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
-      <div className="p-4 h-full overflow-y-auto">
-        {!isExpanded ? (
-          <div className="flex flex-col items-center gap-4 pt-4">
-            <button className="p-2 hover:bg-gray-100 rounded-lg" title="Upload">📤</button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg" title="Fabrics">🧵</button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg" title="Export">📄</button>
-          </div>
-        ) : (
-          <>
+      <div className={`p-4 h-full overflow-y-auto ${!isExpanded ? "hidden" : "block"}`}>
             <h2 className="text-lg font-bold mb-4">3DFabrica Studio</h2>
             <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleFileChange} />
             <button onClick={() => fileInputRef.current?.click()} className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 mb-4">
@@ -168,8 +144,6 @@ function Sidebar({ fabrics, selectedFabric, onSelectFabric, onUpload, isExpanded
             >
               📄 Export PDF
             </button>
-          </>
-        )}
       </div>
     </aside>
   );
@@ -209,7 +183,7 @@ async function generatePDF(fabricName: string, logoUrl?: string) {
 }
 
 export default function Studio() {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [selectedFabric, setSelectedFabric] = useState<typeof SAMPLE_FABRICS[0]>();
   const [customTextureUrl, setCustomTextureUrl] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);

@@ -16,9 +16,9 @@ const Floor = () => {
   }));
 
   return (
-    <mesh ref={ref} receiveShadow>
+    <mesh ref={ref as any} receiveShadow>
       <planeGeometry args={[10, 10]} />
-      <meshStandardMaterial color="#f0f0f0" />
+      <meshStandardMaterial color="#ffffff" />
     </mesh>
   );
 };
@@ -55,7 +55,7 @@ const Fabric = ({
 
   return (
     <group>
-      <mesh ref={ref} castShadow receiveShadow>
+      <mesh ref={ref as any} castShadow receiveShadow>
         <boxGeometry args={[2, 2, 0.1]} />
         <primitive object={material} attach="material" />
       </mesh>
@@ -114,10 +114,10 @@ const Scene = () => {
 
 const ThreeDViewer = ({
   autoRotate = true,
-  backgroundColor = "#1B365D",
+  backgroundColor = "transparent",
 }: ThreeDViewerProps) => {
   return (
-    <div className="w-full h-full min-h-[500px] bg-[#1B365D]">
+    <div className="w-full h-full min-h-[500px]">
       <Canvas
         shadows
         camera={{ position: [0, 5, 10], fov: 50 }}

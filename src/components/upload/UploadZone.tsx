@@ -5,6 +5,7 @@ import { Upload, X, FileText, CheckCircle } from "lucide-react";
 import { Progress } from "../ui/progress";
 import { Button } from "../ui/button";
 import { Alert, AlertDescription } from "../ui/alert";
+import { validateImage, convertToModel as processUpload } from "@/lib/3d-service";
 
 interface UploadZoneProps {
   onFileAccepted?: (file: File) => void;
@@ -22,7 +23,7 @@ const UploadZone = ({
       if (!isValid) {
         throw new Error("Image dimensions must be at least 1024x1024 pixels");
       }
-      const metadata = await processUpload(file);
+      const metadata = await processUpload(file.name, { format: "gltf", quality: "advanced" });
       console.log("Fabric metadata:", metadata);
     } catch (error) {
       console.error("Error processing file:", error);

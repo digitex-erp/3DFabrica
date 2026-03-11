@@ -9,6 +9,11 @@ import { auth0Config } from "./lib/auth";
 import { TempoDevtools } from "tempo-devtools";
 TempoDevtools.init();
 
+// Patch window.replit for safe access
+if (typeof window !== "undefined") {
+  (window as any).replit = (window as any).replit || {};
+}
+
 const basename = import.meta.env.BASE_URL;
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
