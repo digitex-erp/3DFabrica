@@ -8,10 +8,18 @@ import routes from "tempo-routes";
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false);
+  console.log("App: Component rendering...", { url: window.location.pathname });
 
   useEffect(() => {
+    console.log("App: Initializing environment...");
+    // Check if variables are available
+    console.log("App: Supabase URL available?", !!import.meta.env.VITE_SUPABASE_URL);
+    
     // Brief delay to ensure styles and initial assets are ready for screenshots
-    const timer = setTimeout(() => setIsLoaded(true), 100);
+    const timer = setTimeout(() => {
+      console.log("App: Setting isLoaded to true");
+      setIsLoaded(true);
+    }, 100);
     return () => clearTimeout(timer);
   }, []);
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, Suspense } from "react";
+import React, { useState, useCallback, useRef, Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -23,6 +23,11 @@ const SAMPLE_FABRICS = [
 export default function Studio() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  console.log("Studio: Component rendering...");
+
+  useEffect(() => {
+    console.log("Studio: Component mounted");
+  }, []);
   
   // Sidebar State
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
