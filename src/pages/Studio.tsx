@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { type FabricType, FABRIC_PRESETS } from "../lib/texture-service";
 import { uploadFabricImage } from "../lib/fabric-upload";
