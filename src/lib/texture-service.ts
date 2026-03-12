@@ -224,6 +224,9 @@ export const FABRIC_PRESETS = {
   polyester: {
     roughness: 0.4,
   },
+  jacquard: {
+    roughness: 0.6,
+  },
 } as const;
 
 export type FabricType = keyof typeof FABRIC_PRESETS;

@@ -2,3 +2,9 @@
 - [x] Create Supabase fabrics table + RLS
 - [x] Activate fabric upload → 3D mapping → PDF export workflow
 - [x] White background + auto-sidebar + upholstery-only content
+- [x] Supabase PKCE authentication
+- [x] AuthCallback component
+- [x] ProtectedRoute component
+- [x] Removed Auth0, switched to Supabase
+- [x] Updated Header.tsx, Home.tsx, UploadZone.tsx
+- [x] SPA routing rule in vercel.json
